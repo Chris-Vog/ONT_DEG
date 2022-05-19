@@ -1,6 +1,6 @@
 # Differential gene expression (**DEG**) analysis using Oxford Nanopore Technologies
 
-Dies ist ein Workflow um differenziell exprimierte Gene mit Hilfe der Oxford Nanopore Technologie zu analysieren. Bei dieser Technologie handelt es sich um eine Methode, bei der lange Nukleotid-Sequenzen mithilfe von Nanoporen analysiert werden. Diese sind in einer Membran eingebettet und wo sie von einem Elektrolyt umgeben sind. Durch das Anlegen einer Spannung werden die Ionen in Bewegung gesetzt und folglich durch die Poren strÃ¶men. Die Bewegung der Ionen erzeugt einen stetigen Ionen-Fluss. Sobald DNA-MolekÃ¼le sich einer Pore nÃ¤hern, werden die doppelstrÃ¤ngigen Konstrukte aufgetrennt und aufgrund biophysischer KrÃ¤fte durch die Pore geschleust. Der dadurch resultierende eingeschrÃ¤nkte Raum innerhalb der Pore fÃ¼hrt dazu, dass der Ionen-Fluss eingeschrÃ¤nkt ist und folglich reduziert wird. Diese Schwankungen hinsichtlich des Ionen-Flusses werden aufgenommen und kÃ¶nnen mithilfe von *Machine learning*-Algorithmen in Nukleotidsequenzen Ã¼bersetzt werden.
+Dies ist ein Workflow um differenziell exprimierte Gene mit Hilfe der Oxford Nanopore Technologie zu analysieren. Bei dieser Technologie handelt es sich um eine Methode, bei der lange Nukleotid-Sequenzen mithilfe von Nanoporen analysiert werden. Diese sind in einer Membran eingebettet und wo sie von einem Elektrolyt umgeben sind. Durch das Anlegen einer Spannung werden die Ionen in Bewegung gesetzt und folglich durch die Poren strömen. Die Bewegung der Ionen erzeugt einen stetigen Ionen-Fluss. Sobald DNA-Moleküle sich einer Pore nähern, werden die doppelsträngigen Konstrukte aufgetrennt und aufgrund biophysischer Kräfte durch die Pore geschleust. Der dadurch resultierende eingeschrÃ¤nkte Raum innerhalb der Pore führt dazu, dass der Ionen-Fluss eingeschränkt ist und folglich reduziert wird. Diese Schwankungen hinsichtlich des Ionen-Flusses werden aufgenommen und können mithilfe von *Machine learning*-Algorithmen in Nukleotidsequenzen übersetzt werden.
 
 ## Basecalling (Linux)
 
@@ -19,4 +19,10 @@ Die *Software* selbst lässt sich mit drei essenziellen Befehlen ausführen.
 |Config-Datei für die Flow cell | -c / --config | dna_r9.4.1_450bps_sup.cfg|
 |Pfad zu den .fast5-Dateien | -i / --input | ~path/to/files|
 |Speicherort für die .fastq-Dateien | -s / --save_path | ~path/to/folder|
+
+Informationen über sämtliche Funktionen von Guppy sind in der Dokumentation aufgeführt.
+
+    $ guppy_basecaller --help
+
+
 
