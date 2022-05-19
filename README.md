@@ -24,5 +24,20 @@ Informationen über sämtliche Funktionen von Guppy sind in der Dokumentation aufg
 
     $ guppy_basecaller --help
 
+Um den Prozess zu beschleunigen empfiehlt es sich diesen im GPU-Modus auszuführen. Hierfür muss das Attribut `-x` definiert werden. Hierzu sollte der Befehl `auto` ausreichend sein. 
+
+Der komplette Befehl:
+
+    $ guppy_basecaller --min_qscore 7 --trim_barcodes --barcode_kits "SQK-PCB109" -i fast5/ -s fastq/ -c dna_r9.4.1_450bps_sup.cfg -x auto --gpu_runners_per_device 4 --chunks_per_runner 128
+
+Als Resultat erhält man für jeden *Barcode* einen Ordner, der eine Vielzahl an `.fastq`-Dateien enthält. Für die weitere Verarbeitung der Daten müssen diese konkateniert werden:
+
+    $ cat path/to/fastq/{barcode}/*.fastq > filename.fastq
+
+Dieser Befehl muss für jede Probe durchgeführt werden, sodass man für jede Probe eine einzige `.fastq`-Datei erhält, die alle Sequenzen enthält.
+
+## Mapping using Minimap2 (Linux)
+
+Beim `Mapping` werden kleinere Sequenzen mit einer langen Referenz-Sequenz abgeglichen und Bereichen zugeordnet. `Minimap2` ist dabei ein vielseitiges Programm, was insbesondere beim *mapping* langer Sequenzen von nicht allzu hoher Qualität gute Ergebnisse erzielt. 
 
 
