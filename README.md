@@ -14,9 +14,9 @@ Da der Algorithmus sich zudem ständig weiterentwickelt, ist es ratsam möglichst 
 
 Die *Software* selbst lässt sich mit drei essenziellen Befehlen ausführen.
 
-    | Befehl | Input
-----|-----|-----
-Config-Datei für die Flow cell | -c / --config | dna_r9.4.1_450bps_sup.cfg
-Pfad zu den .fast5-Dateien | -i / --input | ~path/to/files
-Speicherort für die .fastq-Dateien | -s / --save_path | ~path/to/folder
+|Funktion|Befehl|Input|
+|----|-----|-----|
+|Config-Datei für die Flow cell | -c / --config | dna_r9.4.1_450bps_sup.cfg|
+|Pfad zu den .fast5-Dateien | -i / --input | ~path/to/files|
+|Speicherort für die .fastq-Dateien | -s / --save_path | ~path/to/folder|
 
