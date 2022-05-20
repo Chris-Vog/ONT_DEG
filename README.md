@@ -24,7 +24,7 @@ Informationen über sämtliche Funktionen von Guppy sind in der Dokumentation aufg
 
     $ guppy_basecaller --help
 
-Um den Prozess zu beschleunigen empfiehlt es sich diesen im GPU-Modus auszuführen. Hierfür muss das Attribut `-x` definiert werden. Hierzu sollte der Befehl `auto` ausreichend sein. 
+Um den Prozess zu beschleunigen empfiehlt es sich diesen im GPU-Modus auszuführen. Hierfür muss das Attribut `-x` mit dem Befehl `auto` ausgeführt werden. 
 
 Der komplette Befehl:
 
@@ -52,6 +52,16 @@ Erläuterungen:
 
 Beim `Mapping` werden kleinere Sequenzen mit einer langen Referenz-Sequenz abgeglichen und Bereichen zugeordnet. `Minimap2` ist dabei ein vielseitiges Programm, was insbesondere beim *mapping* langer Sequenzen von nicht allzu hoher Qualität gute Ergebnisse erzielt. 
 
+### Download des Referenz-Genoms und der Annotation (Linux)
+
+Die Sequenzier-Daten werden bei diesem Schritt mit dem humanen Genom abgeglichen und die Position mit der höchsten Übereinstimmung identifiziert. Das humane Genom wird als `FASTA` zur Verfügung gestellt.
+
+    $ wget -P path/to/ReferenceData https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_39/GRCh38.p13.genome.fa.gz
+
+Nukleotid-Sequenz der GRCh38.p13 Genomassemblierung aller Regionen, inklusive Referenz-Chromosomen, Korrekturen und Haplotypen. Die dazugehörige Annotation ist in einer `.gtf`-Datei gespeichert. Wichtig hierbei ist, dass die Versionen übereinstimmen.
+
+    $ wget -P path/to/ReferenceData https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_39/gencode.v39.chr_patch_hapl_scaff.annotation.gtf.gz
+
 ### Indexing (Linux)
 
 Ohne Angaben von weiteren Informationen verwendet `Minimap2` eine Referenz-Datenbank und eine Sequenz-Datei und führt ein annäherndes *Mapping* durch. Für das humane Genom muss jedoch vorerst ein Index generiert werden.
@@ -74,7 +84,7 @@ Für alle Anwendungen verwendet `Minimap2` den selben Algorithmus. Dennoch muss d
 
 `Samtools` ist eine Sammplung von Programmen, um mit Sequenzierdaten zu interagieren und weiterzubearbeiten. Es wird hier genutzt die Sequenzen in Abhängigkeit ihrer Lokalisation im Genom zu sortieren:
 
-    $ minimap2 -t {threads} -ax splice -k14 –secondary=no {input.index} {input.fastq} | samtools view -Sb | samtools sort - -o {output.bam}
+    $ minimap2 -t {threads} -ax splice -k14 –secondary=no {input.index} {input.fastq} | samtools view -Sb | samtools sort -o {output.sorted.bam}
 
 Hier ist zu beachten, dass der vorherige Befehl sich hier wiederholt. Mithilfe des *Pipe Operators* `|` können die Ergebnisse einer Operation weiteren Befehlen übergeben werden.
 
@@ -83,3 +93,9 @@ Die Qualität und die Effizienz des Mappings wird ebenfalls mittels samtools anal
     $ samtools flagstat /path/to/bam_file > {flagstat}.txt
 
 Die so erstellten .txt-Dateien werden mit Hilfe von **R** ausgewertet und visualisiert.
+
+Des Weiteren können *Mappings* mit `Samtools` indexiert werden. Dies ist notwendig, wenn die Daten beispielsweise mit dem **IGV browser** analysiert werden. 
+
+    $ samtools index -b /path/to/{input}.sorted.bam /path/to/{input}.sorted.bam.bai
+
+Die resultierende Datei ist noch nicht vorhanden und wir mit Hilde diesen Befehls benannt und erstellt. Verwende hierzu den gleichen Dateinamen und füge `.bai` hinzu. 
