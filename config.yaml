@@ -32,10 +32,10 @@ Samples:
         D2: "fastq/PCB_replicate2.fastq.gz"
         D3: "fastq/PCB_replicate3.fastq.gz"
 
-referenceGroup: "DMSO"   # this name *must* match one of the group names
+referenceGroup: "DMSO"   # Muss identisch zu einer der Gruppenbeschreibungen sein
 
 readCountMinThreshold: 10   # what is the minimum number of transcripts for a gene feature to be considered
-lfcThreshold : 1            # minimum required log2 fold change for differential expression analysis
+lfcThreshold : 1.5          # minimum required log2 fold change for differential expression analysis
 adjPValueThreshold: 0.05    # adjusted p-value threshold for differential expression analysis
-topVarianceGenes: 50
-
+topVarianceGenes: 50        # number of genes with the highest variance depicted in the variance heatmap
+cutoff_geneCount: 10

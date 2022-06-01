@@ -33,3 +33,19 @@ variance_heatmap <- pheatmap(mat,
 # colData(vsd.deSeqRaw)[,"replicate"] <- factor(colData(vsd.deSeqRaw)[,"replicate"])
 
 suppressWarnings(print(variance_heatmap))
+
+# Principal component analysis
+plotPCA(vsd.deSeqRaw, intgroup = c("group" , "replicate")) # Hiermit wird automatisch eine PCA Analyse durchgeführt und visualisiert
+
+## Die Darstellung kann aber auch modifiziert werden. Hierzu wird das package ggplot2 verwendet
+## Die Daten müssen dabei ausgegeben und in ein Objekt überführt werden
+pcaData <- plotPCA(vsd.deSeqRaw, intgroup = c("group" , "replicate"))
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+PCA_plot <- ggplot(pcaData, aes(PC1, PC2, color=group, shape=replicate)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+
+suppressWarnings((print(PCA_plot)))

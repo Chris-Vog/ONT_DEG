@@ -39,8 +39,3 @@ geneCounts_ordered$RowSums <- NULL
 #Save the data set----
 xlsExpressedGenes <- file.path("ExpressedGenes.xlsx")
 write_xlsx(x = geneCounts_ordered, path = xlsExpressedGenes)
-
-# Erstellung eines DESeq2-Datensatzes um die importierten Daten zu speichern
-## Dieses Datei-Objekt wird für die folgende DGE-Analyse benötigt und
-## ist auch Grundlage für weitere funktionale Analysen.
-deSeqRaw <- DESeqDataSetFromMatrix(countData = geneCounts, colData = studyDesign, design = ~ group)
