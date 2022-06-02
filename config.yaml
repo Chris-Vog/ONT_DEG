@@ -38,4 +38,4 @@ readCountMinThreshold: 10   # what is the minimum number of transcripts for a ge
 lfcThreshold : 1.5          # minimum required log2 fold change for differential expression analysis
 adjPValueThreshold: 0.05    # adjusted p-value threshold for differential expression analysis
 topVarianceGenes: 50        # number of genes with the highest variance depicted in the variance heatmap
-cutoff_geneCount: 10
+cutoff_geneCount: 10        # min number of counts per gene over all samples

@@ -40,16 +40,35 @@ res <- results(dds, name = "group_PCB_vs_DMSO")
 
 ## Bei mehr als einer Bedingung wird es etwas komplizierter in der Berechnung. 
 ## Die zu vergleichenden Gruppen können auch mit Hilfe des Attributs 'contrast' spezifiziert werden.
-res2 <- results(dds, contrast = c("group" , "BaP" , "PCB")) # Hierbei wird BaP über PCB verglichen. In diesem Fall wird der LFC von PCB auf 0 gesetzt.
+#res2 <- results(dds, contrast = c("group" , "BaP" , "PCB")) # Hierbei wird BaP über PCB verglichen. In diesem Fall wird der LFC von PCB auf 0 gesetzt.
 
-## Exemplarische DEG-Analyse für BaP vs. DMSO
+# Exemplarische DEG-Analyse für BaP vs. DMSO
 res_BaP_DMSO <- results(dds, contrast = c("group" , "BaP" , "DMSO")) # 1. Erster Characterstring = Spalte in studyDesign! 2. und 3. Characterstring = Gruppen aus dieser Spalte
 
+summary(res_BaP_DMSO) # Zusammenfassende Statistiken der Analyse
+
+## Bisher sind die Gene lediglich mit ihrer ENSEMBL ID angegeben. Diese kann in die ENTREZ ID oder in das RefSeq Symbol überführt werden.
+## Die dazu nötigen Funktionen sind im common.R script vorhanden.
+res_BaP_DMSO$SYMBOL <- ens.str.SYMBOL(result.table = res_BaP_DMSO)
+res_BaP_DMSO$ENTREZ <- ens.str.ENTREZ(result.table = res_BaP_DMSO)
+
+## Speichern der DEG-Analyse
+res_BaP_DMSO <- res_BaP_DMSO[order(res_BaP_DMSO$padj, decreasing = FALSE),]
+write.table(x = res_BaP_DMSO, file = "Analysis/DEG_Analysis/BaP_DMSO.txt", sep = "\t")
+
+#Visualisierung
+## LFC Minderung für Visualisierungen
+resLFC <- lfcShrink(dds, contrast = c("group" , "BaP" , "DMSO"), type = "ashr")# Hierzu muss das package "ashr installiert sein.
+### Alternativ kann auch "apeglm" verwendet werden. Dieser Estimator funktioniert aber nicht mit dem Argument 'contrast', sondern nur mit 'coef'.
+
 ## MA-Plot
-DESeq2::plotMA(res_BaP_DDMSO, ylim = c(-5,5),
+## Hier werden die LFCs (y-Achse) gegen die Anzahl der counts (x-Achse) aufgetragen.
+DESeq2::plotMA(resLFC, ylim = c(-5,5),
                colNonSig = "gray32", colSig = "red3",
                log = "x")+
   title("B[a]P vs. DMSO")
+
+
 
 
 
