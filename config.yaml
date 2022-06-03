@@ -39,3 +39,5 @@ lfcThreshold : 1.5          # minimum required log2 fold change for differential
 adjPValueThreshold: 0.05    # adjusted p-value threshold for differential expression analysis
 topVarianceGenes: 50        # number of genes with the highest variance depicted in the variance heatmap
 cutoff_geneCount: 10        # min number of counts per gene over all samples
+minGSSize: 5                # min number of Genes for a Gene Set Enrichment Analysis 
+maxGSSize: 100              # max number of Genes for a Gene Set Enrichment Analysis

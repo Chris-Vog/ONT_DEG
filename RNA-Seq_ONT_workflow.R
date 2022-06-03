@@ -257,7 +257,10 @@ samplePoisDistMatrix <- as.matrix(poisd$dd)
 rownames(samplePoisDistMatrix) <- paste(studyDesign$group)
 colnames(samplePoisDistMatrix) <- paste(studyDesign$group)
 
-pheatmap(samplePoisDistMatrix, clustering_distance_rows = poisd$dd, clustering_distance_cols = poisd$dd, col = colors)
+pheatmap(samplePoisDistMatrix, 
+         clustering_distance_rows = poisd$dd, 
+         clustering_distance_cols = poisd$dd, 
+         col = colors)
 
 #Variance heatmap (unnormalized data)----
 #Creation of a heatmap depicting the genes with the highes variance
@@ -284,12 +287,12 @@ dds <- dds[keep,]
 
 #BaP vs DMSO----
 ens.str.SYMBOL <- function(result.table) {
-  ens.str.vector <- sub("\\.*","",rownames(result.table))
+  ens.str.vector <- sub("\\..*","",rownames(result.table))
   mapIds(org.Hs.eg.db, keys = ens.str.vector, column = "SYMBOL", keytype = "ENSEMBL", multiVals = "first")
 }
 
 ens.str.ENTREZ <- function(result.table) {
-  ens.str.vector <- sub("\\.*","",rownames(result.table))
+  ens.str.vector <- sub("\\..*","",rownames(result.table))
   mapIds(org.Hs.eg.db, keys = ens.str.vector, column = "ENTREZID", keytype = "ENSEMBL", multiVals = "first")
 }
 
