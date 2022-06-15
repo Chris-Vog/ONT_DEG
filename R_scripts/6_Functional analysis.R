@@ -2,6 +2,7 @@
 ## Analysen wie die Gene Set Enrichment (GSE) Analyse helfen die gewonnen Daten in einem Kontext zu betrachten
 ## Als Grundlage für diese Analyse dienen die L2FC Daten aus der DEG Analyse
 ## Wir bleiben bei dem BaP vs DMSO Beispiel
+# Gene Set enrichment analysis----
 res_BaP_DMSO.filtered <- res_BaP_DMSO %>%
   as.data.frame() %>%
   dplyr::filter(abs(log2FoldChange) > config$lfcThreshold)
@@ -51,3 +52,9 @@ gse.simple<- simplify(x = gseGO(geneList = geneList,
 
 dotplot(gse.simple, showCategory = 35, split =".sign", orderBy = "x")+
   facet_grid(.~.sign)
+
+# Speichern der Ergebnisse
+## Damit die Ergebnisse gespeichert werden können, müssen diese in ein DataFrame umgewandelt werden
+gse.simple.df <- as.data.frame(gse.simple)
+pathway <- file.path("Analysis/Results/pathway.xlsx")
+write_xlsx(x = gse.simple.df, path = pathway)
