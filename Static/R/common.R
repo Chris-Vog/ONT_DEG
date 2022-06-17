@@ -7,6 +7,18 @@ loadFlagstat <- function(file) {
   x[,1]
 }
 
+ncalc <- function(len.vector, n) {
+  # N50 - length such that scaffolds of this length or longer include half the bases of the assembly
+  len.sorted <- rev(sort(len.vector))
+  len.sorted[cumsum(len.sorted) >= sum(len.sorted)*n][1]
+}
+
+
+lcalc <- function(len.vector, n) {
+  len.sorted <- rev(sort(len.vector))
+  which(cumsum(len.sorted) >= sum(len.sorted)*n)[1]
+}
+
 #Gene name conversion
 ah <- AnnotationHub()
 ahDb <- query(ah, pattern = c("Homo sapiens","EnsDb", 104))
