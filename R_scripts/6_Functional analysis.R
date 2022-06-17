@@ -58,3 +58,22 @@ dotplot(gse.simple, showCategory = 35, split =".sign", orderBy = "x")+
 gse.simple.df <- as.data.frame(gse.simple)
 pathway <- file.path("Analysis/Results/pathway.xlsx")
 write_xlsx(x = gse.simple.df, path = pathway)
+
+# Umwandlung der ENSEMBL-ID in die entrez-ID----
+geneList.entrez <- geneList
+de_entrez <- geneList[abs(geneList.entrez) > 1]
+de_entrez <- as.data.frame(de_entrez)
+
+entr1 <- ens.str.ENTREZ(row.names(de_entrez))
+entr1 <- as.data.frame(entr1)
+
+de_entrez$entrez <- entr1$entr1
+de_entrez <- na.omit(de_entrez)
+
+de1 <- de_entrez$de_entrez
+names(de1) <- de_entrez$entrez
+
+# DGN Network----
+# Erstellung eines Balkendiagramms mit assoziierten Erkrankungen nach der Disease Gene Network (DGN) Datenbank
+edo <- enrichDGN(names(de1))
+barplot(edo, showCategory = 20)
