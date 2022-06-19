@@ -1,4 +1,33 @@
-# Qualitäts-Kontrolle ONT generierter Daten
+#Quality control
+#Creating a statistic-table of fastq-files----
+processQCFastq <- function(rowname) {
+  row <- which(row.names(studyDesign)==rowname)
+  file <- as.character(studyDesign[row, "filename"])
+  fastq <- readFastq(file, widthIds=FALSE)
+  c(
+    reads = formatC(length(fastq), big.mark=","), #number of total reads
+    mbs = formatC(round(sum(width(fastq)) / 1000 / 1000, digits=1), big.mark=","), 
+    min = min(width(fastq)), #minimum length
+    max = max(width(fastq)), #maximum length
+    mean = round(mean(width(fastq)), digits=1), #mean length
+    median = round(median(width(fastq)), digits=0), #median of read length
+    qval = round(mean(alphabetScore(fastq) / width(fastq)), digits=1), #mean quality score
+    gc = round(mean(letterFrequency(sread(fastq), "GC")  / width(fastq)) * 100, digits=1), #Percent GC-content
+    n50 = ncalc(width(fastq), n=0.5), #number of reads, which scaffold 50 % of assembled bases
+    l50 = lcalc(width(fastq), n=0.5), #length of reads, which scaffold 50 % of assembled bases
+    n90 = ncalc(width(fastq), n=0.9), #number of reads, which scaffold 90 % of assembled bases
+    l90 = lcalc(width(fastq), n=0.9)  #length of reads, which scaffold 90 % of assembled bases
+  )
+}
+
+data <- lapply(row.names(studyDesign), processQCFastq) #applies this function to a vector of samples
+qcData <- data.frame(data) #transformation of the data into a data frame
+colnames(qcData) <- row.names(studyDesign)
+
+# Darstellung der Daten
+knitr::kable(qcData, caption="Summary statistics for the cDNA libraries imported", booktabs=TRUE, table.envir='table*', linesep="")  %>%
+  kable_styling(latex_options=c("hold_position", font_size=9))
+
 #Extraction and visualization of read length----
 extractLengths <- function(rowname) {
   row <- which(row.names(studyDesign)==rowname)
