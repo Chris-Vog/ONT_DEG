@@ -1,4 +1,5 @@
-# Venn diagram data vs DMSO----
+# Venn diagram---- 
+## Hier wurden die Daten jeweils mit DMSO verglichen
 PCB.total <- as.data.frame(rownames(res_PCB_DMSO[abs(res_PCB_DMSO$log2FoldChange) > 1.5 ,]))
 PCB.up <- as.data.frame(rownames(res_PCB_DMSO[res_PCB_DMSO$log2FoldChange > 1.5 ,]))
 PCB.down <- as.data.frame(rownames(res_PCB_DMSO[res_PCB_DMSO$log2FoldChange < -1.5 ,]))

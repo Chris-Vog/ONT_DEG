@@ -1,5 +1,5 @@
-#Quality control
-#Creating a statistic-table of fastq-files----
+# Quality control----
+#Creating a statistic-table of fastq-files
 processQCFastq <- function(rowname) {
   row <- which(row.names(studyDesign)==rowname)
   file <- as.character(studyDesign[row, "filename"])
@@ -28,7 +28,7 @@ colnames(qcData) <- row.names(studyDesign)
 knitr::kable(qcData, caption="Summary statistics for the cDNA libraries imported", booktabs=TRUE, table.envir='table*', linesep="")  %>%
   kable_styling(latex_options=c("hold_position", font_size=9))
 
-#Extraction and visualization of read length----
+#Extraction and visualization of read length
 extractLengths <- function(rowname) {
   row <- which(row.names(studyDesign)==rowname)
   file <- as.character(studyDesign[row, "filename"])
@@ -53,7 +53,7 @@ plot <- ggplot(lengthMatrixMelt, aes(x=variable, y=value, fill=group)) +
 
 suppressWarnings(print(plot))
 
-#Extraction and visualization of quality scores----
+#Extraction and visualization of quality scores
 extractQualities <- function(rowname) {
   row <- which(row.names(studyDesign)==rowname)
   file <- as.character(studyDesign[row, "filename"])
@@ -71,7 +71,7 @@ plotQ <- ggplot(qualityMatrixMelt, aes(x=variable, y=value, fill=group)) + geom_
 
 suppressWarnings(print(plotQ))
 
-#Analysis of flagstat results----
+#Analysis of flagstat results
 flagstatTargets <- file.path("Analysis", "flagstat", 
                              paste(tools::file_path_sans_ext(basename(as.character(studyDesign$filename)), compression=TRUE),".txt",sep=""))
 

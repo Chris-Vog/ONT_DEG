@@ -1,9 +1,10 @@
+# Read summarizing----
 readCountTargets <- file.path("Analysis", "Minimap2", 
                               paste(tools::file_path_sans_ext(basename(as.character(studyDesign$filename)), compression=TRUE), ".sorted.bam", sep=""))
 
 ExternalAnnotation = file.path("ReferenceData", basename(config$genome_annotation))
 
-#Assign mapped sequencing reads to specified genomic features----
+#Assign mapped sequencing reads to specified genomic features
 geneCounts <- featureCounts(files=readCountTargets,
                             annot.ext=ExternalAnnotation,
                             isGTFAnnotationFile=TRUE,
@@ -16,7 +17,7 @@ geneCounts <- featureCounts(files=readCountTargets,
 
 colnames(geneCounts) <- rownames(studyDesign)
 
-#Extraction of the top 10 genes according to the total number of reads----
+#Extraction of the top 10 genes according to the total number of reads
 knitr::kable(geneCounts[order(rowSums(geneCounts), decreasing=TRUE)[1:10],], caption="Table showing the 10 annotated gene features with the highest number of mapped reads", booktabs=TRUE, table.envir='table*', linesep="") %>%
   kable_styling(latex_options=c("hold_position", font_size=11)) %>%
   add_footnote(c("This is raw count data and no normalisation or transformation has been performed"))
@@ -40,7 +41,7 @@ rownames(geneCounts_nonZeros) <- geneCounts_nonZeros$Symbols
 geneCounts_nonZeros$Symbols <- NULL
 dim(geneCounts_nonZeros)
 
-#Change the names of the columns----
+#Change the names of the columns
 colnames(geneCounts_nonZeros) <- paste0(studyDesign$group, "_", studyDesign$replicate) #It is important to choose different column names
 
 #Ordering of the data frame
@@ -51,10 +52,10 @@ geneCounts_ordered$RowSums <- rowSums(geneCounts_ordered)
 geneCounts_ordered$gene_id <- rownames(geneCounts_ordered)
 
 geneCounts_ordered <- geneCounts_ordered[!duplicated(geneCounts_ordered$gene_id),]
-# Order the samples with the arrange function of dplyr----
+# Order the samples with the arrange function of dplyr
 geneCounts_ordered <- geneCounts_ordered %>%
   dplyr::arrange(desc(RowSums))
 
-#Save the data set----
+#Save the data set
 xlsExpressedGenes <- file.path("ExpressedGenes.xlsx")
 write_xlsx(x = geneCounts_ordered, path = xlsExpressedGenes)

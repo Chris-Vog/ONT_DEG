@@ -1,4 +1,4 @@
-# Vergleichende Analysen der Proben
+# Vergleichende Analysen der Proben----
 # Distanz-Analyse:
 ## Bei dieser Analyse wird dargestellt, wie sich die Proben ?hneln.
 colors <- colorRampPalette(brewer.pal(4, "Blues"))(255) # Einstellung der Farbe mit Hilfe des packages "RColorBrewer"

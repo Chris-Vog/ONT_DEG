@@ -1,4 +1,4 @@
-# Differential gene expression (DGE) Analyse
+# Differential gene expression (DGE) Analyse----
 ## Eine DGE-Analyse kann immer nur zwischen zwei Bedingungen durchgef?hrt werden.
 
 # Erstellung eines DESeq2-Datensatzes um die importierten Daten zu speichern
@@ -68,11 +68,3 @@ DESeq2::plotMA(resLFC, ylim = c(-5,5),
                colNonSig = "gray32", colSig = "red3",
                log = "x")+
   title("B[a]P vs. DMSO")
-
-
-
-
-
-
-
-

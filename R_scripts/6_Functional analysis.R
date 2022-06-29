@@ -1,8 +1,8 @@
-# Funktionelle Analysen
+# Funktionelle Analysen----
 ## Analysen wie die Gene Set Enrichment (GSE) Analyse helfen die gewonnen Daten in einem Kontext zu betrachten
 ## Als Grundlage f?r diese Analyse dienen die L2FC Daten aus der DEG Analyse
 ## Wir bleiben bei dem BaP vs DMSO Beispiel
-# Gene Set enrichment analysis----
+# Gene Set enrichment analysis
 res_BaP_DMSO.filtered <- res_BaP_DMSO %>%
   as.data.frame() %>%
   dplyr::filter(abs(log2FoldChange) > config$lfcThreshold)
@@ -75,7 +75,7 @@ de_entrez <- na.omit(de_entrez)
 de1 <- de_entrez$de_entrez
 names(de1) <- de_entrez$entrez
 
-# DGN Network----
+# DGN Network
 # Erstellung eines Balkendiagramms mit assoziierten Erkrankungen nach der Disease Gene Network (DGN) Datenbank
 edo <- enrichDGN(names(de1))
 barplot(edo, showCategory = 20)

@@ -1,10 +1,11 @@
-#Setting the working directory----
+# Configuration of the analysis----
+## Setting the working directory
 ## Hier stellt ihr fest, in welchem Ordner ihr arbeitet
 ## Wenn nicht weiter spezifiziert, dann ist dies der Ausgangspunkt aller Dateipfade
 dir <- file.path(getwd())
 list.files(dir)
 
-#Loading required packages----
+#Loading required packages
 suppressMessages(library(digest))
 suppressMessages(library(ShortRead))
 suppressMessages(library(ggplot2))
@@ -35,7 +36,7 @@ suppressMessages(library(tidyft))
 suppressMessages(library(AnnotationHub))
 suppressMessages(library(kableExtra))
 
-#Loading custom functions and configurations----
+#Loading custom functions and configurations
 ## Selbstgeschriebene FUnktionen k?nnen in einer Extra-Datei gespeichert werden
 ## Diese werden hier geladen und stehen ab sofort zur Verf?gung.
 source("Static/R/common.R")
@@ -47,7 +48,7 @@ dir.create(resultDir, showWarnings = FALSE, recursive = TRUE) # Erstellung eines
 config <- yaml::yaml.load_file("config.yaml")
 persistenceData <- file.path(resultDir, paste0(config$project, ".RData"))
 
-#Creating the study design from the config-file----
+#Creating the study design from the config-file
 ## Das study design enth?lt die Informationen ?ber eure Proben
 studyDesign <- data_frame()
 for (i in 1:length(config$Samples)) {

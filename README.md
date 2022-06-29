@@ -2,6 +2,18 @@
 
 Dies ist ein Workflow um differenziell exprimierte Gene mit Hilfe der Oxford Nanopore Technologie zu analysieren. Bei dieser Technologie handelt es sich um eine Methode, bei der lange Nukleotid-Sequenzen mithilfe von Nanoporen analysiert werden. Diese sind in einer Membran eingebettet und wo sie von einem Elektrolyt umgeben sind. Durch das Anlegen einer Spannung werden die Ionen in Bewegung gesetzt und folglich durch die Poren strömen. Die Bewegung der Ionen erzeugt einen stetigen Ionen-Fluss. Sobald DNA-Moleküle sich einer Pore nähern, werden die doppelsträngigen Konstrukte aufgetrennt und aufgrund biophysischer Kräfte durch die Pore geschleust. Der dadurch resultierende eingeschrÃ¤nkte Raum innerhalb der Pore führt dazu, dass der Ionen-Fluss eingeschränkt ist und folglich reduziert wird. Diese Schwankungen hinsichtlich des Ionen-Flusses werden aufgenommen und können mithilfe von *Machine learning*-Algorithmen in Nukleotidsequenzen übersetzt werden.
 
+## Bevor es losgeht
+
+Die benötigten *Tools* wurden in einer Arbeitsumgebung installiert, die vor der Analyse aktiviert werden muss.
+
+    $ source activate RNA-Seq
+
+Des Weiteren wird für die Auswertung und insbesondere für die bioinformatische Aufbereitung der Daten eine bestimmte Ordnerstruktur benutzt. Diese kann zwar angepasst werden, aber die Nutzung dieser Ordnerstruktur vereinfacht den *Workflow*. Um die Ordnerstruktur zu erhalten muss folgender Befehl eurem Projektordner ausgeführt werden. Dazu macht ihr in eurem Projektordner einen Rechtsklick und wählt **Open in terminal** aus.
+
+    $ mkdir -p ./{Analysis/{flagstat,Minimap2},ReferenceData,fast5,fastq}
+
+Für die weitere Analyse empfiehlt sich zudem die Befehle im Projektordner auszuführen!
+
 ## Basecalling (Linux)
 
 Unter dem Prozess des *Basecallings* versteht man die Übersetzung der Veränderungen im Stromfluss in eine Nukleotidsequenz. Die *Software* **Guppy** enthält den **ONT** Algorithmus sowie zusätzliche Funktionen für die weitere prozessierung der Daten. Die Informationen hinsichtlich der Spannungsänderung sind in sog. `.fast5`-Dateien gespeichert und die Sequenzen werden dann in `.fastq`-Dateien umgeschrieben. Weitere wichtige und nützliche Funktionen sind:
@@ -34,7 +46,11 @@ Als Resultat erhält man für jeden *Barcode* einen Ordner, der eine Vielzahl an `
 
     $ cat path/to/fastq/{barcode}/*.fastq > filename.fastq
 
-Dieser Befehl muss für jede Probe durchgeführt werden, sodass man für jede Probe eine einzige `.fastq`-Datei erhält, die alle Sequenzen enthält.
+Dieser Befehl muss für jede Probe durchgeführt werden, sodass man für jede Probe eine einzige `.fastq`-Datei, die alle Sequenzen enthält.
+
+Um zudem Platz zu sparen können die Dateien komprimiert werden. Die hier verwendeten *Tools* sind aber in der Lage sowohl komprimierte als auch nicht komprimierte Dateien zu analysieren.
+
+    $ gzip path/to/.fastq-File
 
 ### Quality-Control mittels MinIONQC (R auf verschiedenen OS anwendbar)
 
@@ -78,15 +94,15 @@ Es empfiehlt sich immer eine definierte Ordnerstruktur einzuhalten. Sämtliche Re
 
 Für alle Anwendungen verwendet `Minimap2` den selben Algorithmus. Dennoch muss der Befehl in Abhängigkeit der verwendeten Sequencing-Technologie angepasst werden:
 
-    $ minimap2 -t {threads} -ax splice -k14 --secondary=no {input.index} {input.fastq}
-
 ### Post-processing of sequencing data using Samtools (Linux)
 
 `Samtools` ist eine Sammplung von Programmen, um mit Sequenzierdaten zu interagieren und weiterzubearbeiten. Es wird hier genutzt die Sequenzen in Abhängigkeit ihrer Lokalisation im Genom zu sortieren:
 
-    $ minimap2 -t {threads} -ax splice -k14 --secondary=no {input.index} {input.fastq} | samtools view -Sb | samtools sort -o {output.sorted.bam}
+    $ minimap2 -t {threads} -ax splice -k14 --secondary=no path/to/reference.mmi {input.fastq} | samtools view -Sb | samtools sort -o {output.sorted.bam}
 
-Hier ist zu beachten, dass der vorherige Befehl sich hier wiederholt. Mithilfe des *Pipe Operators* `|` können die Ergebnisse einer Operation weiteren Befehlen übergeben werden.
+Mithilfe des *Pipe Operators* `|` können die Ergebnisse einer Operation weiteren Befehlen übergeben werden. 
+
+Der {input} und der {output} sollten dabei identisch sein.
 
 Die Qualität und die Effizienz des Mappings wird ebenfalls mittels samtools analysiert. Hierzu werden die flagstats erstellt, die die Anzahl erfolgreicher Alignments aufzählen.
 
