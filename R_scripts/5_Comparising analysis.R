@@ -27,10 +27,12 @@ anno <- as.data.frame(colData(vsd.deSeqRaw)[, c("group","replicate")]) # Hier k?
 variance_heatmap <- pheatmap(mat, 
                              annotation_col = anno, 
                              labels_row = ens.str.SYMBOL(mat),
-                             labels_col = c(studyDesign$group, studyDesign$replicate), drop_levels = TRUE) # Die Reihenfolge kann ?ber die Faktorisierung modifiziert werden
+                             labels_col = c(studyDesign$group, studyDesign$replicate), 
+                             drop_levels = TRUE) # Die Reihenfolge kann ?ber die Faktorisierung modifiziert werden
 
 ## Falls Faktorisierung notwendeig
 #colData(vsd.deSeqRaw)[,"replicate"] <- factor(colData(vsd.deSeqRaw)[,"replicate"])
+
 
 # Principal component analysis
 plotPCA(vsd.deSeqRaw, intgroup = c("group" , "replicate")) # Hiermit wird automatisch eine PCA Analyse durchgef?hrt und visualisiert
@@ -39,8 +41,9 @@ plotPCA(vsd.deSeqRaw, intgroup = c("group" , "replicate")) # Hiermit wird automa
 ## Die Daten m?ssen dabei ausgegeben und in ein Objekt ?berf?hrt werden
 pcaData <- plotPCA(vsd.deSeqRaw, intgroup = c("group" , "replicate"), returnData = TRUE)
 percentVar <- round(100 * attr(pcaData, "percentVar"))
+pcaData$replicate <- factor(pcaData$replicate)
 
-PCA_plot <- ggplot(pcaData, aes(PC1, PC2, color=group, shape=replicate)) +
+PCA_plot <- ggplot(pcaData, aes(x = PC1, y = PC2, color=group.1, shape=replicate)) +
   geom_point(size=3) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 

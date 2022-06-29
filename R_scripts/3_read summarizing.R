@@ -22,7 +22,7 @@ knitr::kable(geneCounts[order(rowSums(geneCounts), decreasing=TRUE)[1:10],], cap
   kable_styling(latex_options=c("hold_position", font_size=11)) %>%
   add_footnote(c("This is raw count data and no normalisation or transformation has been performed"))
 
-#Removal of all genes with zero counts----
+#Removal of all genes with zero counts
 geneCounts_nonZeros <- geneCounts[which(rowSums(geneCounts) > 0),]
 
 geneCounts_nonZeros <- as.data.frame(geneCounts_nonZeros)
@@ -57,5 +57,5 @@ geneCounts_ordered <- geneCounts_ordered %>%
   dplyr::arrange(desc(RowSums))
 
 #Save the data set
-xlsExpressedGenes <- file.path("ExpressedGenes.xlsx")
+xlsExpressedGenes <- file.path("Analysis/Results/ExpressedGenes.xlsx")
 write_xlsx(x = geneCounts_ordered, path = xlsExpressedGenes)

@@ -3,13 +3,13 @@
 ## Als Grundlage f?r diese Analyse dienen die L2FC Daten aus der DEG Analyse
 ## Wir bleiben bei dem BaP vs DMSO Beispiel
 # Gene Set enrichment analysis
-res_BaP_DMSO.filtered <- res_BaP_DMSO %>%
+res.filtered <- res %>%
   as.data.frame() %>%
   dplyr::filter(abs(log2FoldChange) > config$lfcThreshold)
 
 ##Erstellung eines Datensatzes bestehend aus Gen und L2FC
-geneList <- res_BaP_DMSO.filtered$log2FoldChange
-names(geneList) <- rownames(res_BaP_DMSO.filtered)
+geneList <- res.filtered$log2FoldChange
+names(geneList) <- rownames(res.filtered)
 geneList <- sort(geneList, decreasing = TRUE)
 
 organism <- org.Hs.eg.db
@@ -28,7 +28,7 @@ gse <- gseGO(geneList = geneList,
              pAdjustMethod = "none")
 
 ##Visualisierung
-dotplot(gse, showCategory = 35, split =".sign", orderBy = "x")+
+dotplot(gse, showCategory = 15, split =".sign", orderBy = "x")+
   facet_grid(.~.sign)
 
 ## Azeigen der gesamten Ergebnisse
@@ -39,7 +39,7 @@ View(as.data.frame(gse))
 ## Bei den GO-Terms gibt es oft sehr hohe ?berschneidungen.
 ## Diese k?nnen reduziert und in einem GO-Term zusammengefasst werden.
 gse.simple<- simplify(x = gseGO(geneList = geneList,
-                                ont = "MF", # simplify-Methode funktioniert nicht mit "ALL"
+                                ont = "BP", # simplify-Methode funktioniert nicht mit "ALL"
                                 keyType = "ENSEMBL",  
                                 nPerm = 10000, 
                                 minGSSize = config$minGSSize,
@@ -48,7 +48,7 @@ gse.simple<- simplify(x = gseGO(geneList = geneList,
                                 verbose = TRUE, 
                                 OrgDb = organism,
                                 pAdjustMethod = "none"),
-                      cutoff = 0.7, # Prozentuale ?berschneidung der Gene
+                      cutoff = 0.5, # Prozentuale ?berschneidung der Gene
                       by = "p.adjust",
                       select_fun = min)
 
@@ -61,7 +61,7 @@ gse.simple.df <- as.data.frame(gse.simple)
 pathway <- file.path("Analysis/Results/pathway.xlsx")
 write_xlsx(x = gse.simple.df, path = pathway)
 
-# Umwandlung der ENSEMBL-ID in die entrez-ID----
+# Umwandlung der ENSEMBL-ID in die entrez-ID
 geneList.entrez <- geneList
 de_entrez <- geneList[abs(geneList.entrez) > 1]
 de_entrez <- as.data.frame(de_entrez)

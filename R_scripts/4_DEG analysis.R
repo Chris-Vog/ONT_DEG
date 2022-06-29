@@ -11,7 +11,7 @@ if (length(unique(studyDesign$group)) == length(studyDesign$group)){
 }
 
 if (group_size > 1) { 
-  deSeqRaw <- DESeqDataSetFromMatrix(countData=geneCounts, colData=studyDesign, design= ~group)
+  deSeqRaw <- DESeqDataSetFromMatrix(countData=geneCounts, colData=studyDesign, design= ~ group)
 } else {
   deSeqRaw <- DESeqDataSetFromMatrix(countData=geneCounts, colData=studyDesign, design= ~ 1)  
 }
@@ -26,7 +26,7 @@ keep <- rowSums(counts(dds)) >= config$cutoff_geneCount # Dieser Wert ist abh?ng
 dds <- dds[keep,] # Hier wird der Datensatz durch den Filter `keep` indexiert
 
 # Faktor level
-## Voreingestellt wÃ¤hlt R ein Referenzlevel basierend auf der alphabetischen Reihenfolge aus.
+## Voreingestellt wählt R ein Referenzlevel basierend auf der alphabetischen Reihenfolge aus.
 ## Daher muss dem Programm mitgeteilt werden, welche Proben die Kontrollgruppe repr?sentieren.
 ## Hierzu gibt es verschiedene M?glichkeiten, die beide gleich korrekt sind.
 ## 1. Releveln (empfohlen)
@@ -35,36 +35,42 @@ dds <- nbinomWaldTest(dds)
 ## 2. Faktorisierung
 #dds$group <- factor(dds$group, levels = c("DMSO" , "PCB" , "BaP"))
 
-resultsNames(dds) # Die Ergebnisse Ã¤ndern sich, je nachdem welche Gruppe als Referenzgruppe verwendet wird.
+resultsNames(dds) # Die Ergebnisse ändern sich, je nachdem welche Gruppe als Referenzgruppe verwendet wird.
 
 res <- results(dds, name = "group_BaP_vs_DMSO")
 
 ## Bei mehr als einer Bedingung wird es etwas komplizierter in der Berechnung. 
-## Die zu vergleichenden Gruppen kÃ¶nnen auch mit Hilfe des Attributs 'contrast' spezifiziert werden.
-#res2 <- results(dds, contrast = c("group" , "BaP" , "PCB")) # Hierbei wird BaP Ã¼ber PCB verglichen. In diesem Fall wird der LFC von PCB auf 0 gesetzt.
+## Die zu vergleichenden Gruppen können auch mit Hilfe des Attributs 'contrast' spezifiziert werden.
+#res2 <- results(dds, contrast = c("group" , "BaP" , "PCB")) # Hierbei wird BaP über PCB verglichen. In diesem Fall wird der LFC von PCB auf 0 gesetzt.
 
-# Exemplarische DEG-Analyse fÃ¼r BaP vs. DMSO
-res_BaP_DMSO <- results(dds, contrast = c("group" , "BaP" , "DMSO")) # 1. Erster Characterstring = Spalte in studyDesign! 2. und 3. Characterstring = Gruppen aus dieser Spalte
+# Beispiel-Analyse
+res <- results(dds, contrast = c("group" , config$treatedGroup , config$referenceGroup)) # 1. Erster Characterstring = Spalte in studyDesign! 2. und 3. Characterstring = Gruppen aus dieser Spalte
 
-summary(res_BaP_DMSO) # Zusammenfassende Statistiken der Analyse
+summary(res) # Zusammenfassende Statistiken der Analyse
 
 ## Bisher sind die Gene lediglich mit ihrer ENSEMBL ID angegeben. Diese kann in die ENTREZ ID oder in das RefSeq Symbol ?berf?hrt werden.
 ## Die dazu n?tigen Funktionen sind im common.R script vorhanden.
-res_BaP_DMSO$SYMBOL <- ens.str.SYMBOL(result.table = res_BaP_DMSO)
-res_BaP_DMSO$ENTREZ <- ens.str.ENTREZ(result.table = res_BaP_DMSO)
+res$SYMBOL <- ens.str.SYMBOL(result.table = res)
+res$ENTREZ <- ens.str.ENTREZ(result.table = res)
+res$ENSEMBLID <- rownames(res)
 
 ## Speichern der DEG-Analyse
-res_BaP_DMSO <- res_BaP_DMSO[order(res_BaP_DMSO$padj, decreasing = FALSE),]
-write.table(x = res_BaP_DMSO, file = "Analysis/BaP_DMSO.txt", sep = "\t")
+res <- res[order(res$padj, decreasing = FALSE),]
+
+res.filePath.table <- paste0("Analysis/Results/", config$treatedGroup , "_" , config$referenceGroup , ".txt")
+write.table(x = res, file = res.filePath.table, sep = "\t")
+
+res.filePath.xlsx <- paste0("Analysis/Results/", config$treatedGroup , "_" , config$referenceGroup , ".xlsx")
+write_xlsx(x = as.data.frame(res) , path = res.filePath.xlsx)
 
 #Visualisierung
 ## LFC Minderung f?r Visualisierungen
-resLFC <- lfcShrink(dds, contrast = c("group" , "BaP" , "DMSO"), type = "ashr")# Hierzu muss das package "ashr installiert sein.
+resLFC <- lfcShrink(dds, contrast = c("group" , config$treatedGroup , config$referenceGroup), type = "ashr") # Hierzu muss das package "ashr installiert sein.
 ### Alternativ kann auch "apeglm" verwendet werden. Dieser Estimator funktioniert aber nicht mit dem Argument 'contrast', sondern nur mit 'coef'.
 
 ## MA-Plot
 ## Hier werden die LFCs (y-Achse) gegen die Anzahl der counts (x-Achse) aufgetragen.
-DESeq2::plotMA(resLFC, ylim = c(-5,5),
+DESeq2::plotMA(resLFC, ylim = c(-2,2),
                colNonSig = "gray32", colSig = "red3",
                log = "x")+
-  title("B[a]P vs. DMSO")
+  title(paste0(config$treatedGroup , " vs. " , config$referenceGroup))

@@ -1,4 +1,4 @@
-# Quality control----
+#Quality control----
 #Creating a statistic-table of fastq-files
 processQCFastq <- function(rowname) {
   row <- which(row.names(studyDesign)==rowname)
@@ -40,13 +40,15 @@ lengthDataMatrix <- data.frame(t(plyr::rbind.fill.matrix(lengthData)))
 colnames(lengthDataMatrix) <-  row.names(studyDesign)
 
 lengthMatrixMelt <- reshape2::melt(lengthDataMatrix, na.rm=TRUE, measure.vars=row.names(studyDesign))
-lengthMatrixMelt <- cbind(lengthMatrixMelt, group=studyDesign[match(lengthMatrixMelt$variable,  rownames(studyDesign)), "group"])
+lengthMatrixMelt <- cbind(lengthMatrixMelt, group=studyDesign[match(lengthMatrixMelt$variable,  rownames(studyDesign)), "group"],
+                          replicate=studyDesign[match(lengthMatrixMelt$variable,  rownames(studyDesign)), "replicate"])
+lengthMatrixMelt$replicate <- factor(lengthMatrixMelt$replicate)
 
-plot <- ggplot(lengthMatrixMelt, aes(x=variable, y=value, fill=group)) + 
+plot <- ggplot(lengthMatrixMelt, aes(x=variable, y=value, fill=replicate)) + # fill = replicate kann durch fill = group ersetzt werden.
   geom_violin() + 
   scale_y_continuous(limits=c(0, as.numeric(quantile(lengthMatrixMelt$value, probs=c(0.975))))) + 
-  xlab("study sample") +  
-  ylab("Distribution of Read Lengths (bp)") + 
+  xlab("Samples") +  
+  ylab("Distribution Read length (bp)") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
   scale_fill_brewer(palette="Paired") + 
   labs(title="Violin plot showing distribution of read lengths across samples")
@@ -65,9 +67,17 @@ qualityDataMatrix <- data.frame(t(plyr::rbind.fill.matrix(qualityData)))
 colnames(qualityDataMatrix) <-  row.names(studyDesign)
 
 qualityMatrixMelt <- reshape2::melt(qualityDataMatrix, na.rm=TRUE, measure.vars=row.names(studyDesign))
-qualityMatrixMelt <- cbind(qualityMatrixMelt, group=studyDesign[match(qualityMatrixMelt$variable,  rownames(studyDesign)), "group"])
+qualityMatrixMelt <- cbind(qualityMatrixMelt, group=studyDesign[match(qualityMatrixMelt$variable,  rownames(studyDesign)), "group"],
+                           replicate=studyDesign[match(qualityMatrixMelt$variable,  rownames(studyDesign)), "replicate"])
+qualityMatrixMelt$replicate <- factor(qualityMatrixMelt$replicate)
 
-plotQ <- ggplot(qualityMatrixMelt, aes(x=variable, y=value, fill=group)) + geom_violin() + scale_y_continuous(limits=c(min(qualityMatrixMelt$value), max(qualityMatrixMelt$value))) + xlab("study sample") +  ylab("Distribution of Read Qualities (QV)") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + scale_fill_brewer(palette="Paired") + labs(title="Violin plot showing distribution of read qualities across samples")
+plotQ <- ggplot(qualityMatrixMelt, aes(x=variable, y=value, fill=replicate)) + # fill = replicate kann durch fill = group ersetzt werden.
+  geom_violin() + 
+  scale_y_continuous(limits=c(min(qualityMatrixMelt$value), max(qualityMatrixMelt$value))) + 
+  xlab("study sample") +  ylab("Distribution of Read Qualities (QV)") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  scale_fill_brewer(palette="Paired") + 
+  labs(title="Violin plot showing distribution of read qualities across samples")
 
 suppressWarnings(print(plotQ))
 
@@ -76,30 +86,26 @@ flagstatTargets <- file.path("Analysis", "flagstat",
                              paste(tools::file_path_sans_ext(basename(as.character(studyDesign$filename)), compression=TRUE),".txt",sep=""))
 
 loadFlagstat <- function(file) {
-  x <- read.table(file, header=FALSE, sep=" ", fill=NA)[c(1:5),c(1,3)]
+  x <- read.table(file, header=FALSE, sep=" ", fill=NA)[c(1:5,7),c(1,3)]
   x[,1]
 }
 
 flagstatRes <- data.frame(matrix(unlist(lapply(flagstatTargets, loadFlagstat)), ncol=length(flagstatTargets)), stringsAsFactors = FALSE)
 colnames(flagstatRes) <- rownames(studyDesign)
-rownames(flagstatRes) <- c("read mappings", "Secondary", "Supplementary", "Duplicates", "Mapped")
-
-flagstatRes[nrow(flagstatRes)+1,] <- as.numeric(gsub(",","",t(qcData)[, "reads"]))
-rownames(flagstatRes)[6] <- "nreads"
+rownames(flagstatRes) <- c("total reads", "Primary" , "Secondary", "Supplementary", "Duplicates", "Mapped")
 
 getVal <- function(word) {
   sum(as.numeric(unlist(strsplit(word, "/"))))
 }
 
-zreads <- unlist(lapply(flagstatRes["read mappings", ], getVal)) -
-  unlist(lapply(flagstatRes["Secondary", ], getVal)) -
-  unlist(lapply(flagstatRes["Supplementary", ], getVal)) - 
-  unlist(lapply(flagstatRes["Duplicates", ], getVal)) 
+zreads <- unlist(lapply(flagstatRes["total reads", ], getVal)) -
+  unlist(lapply(flagstatRes["Primary", ], getVal)) -
+  unlist(lapply(flagstatRes["Secondary", ], getVal)) - 
+  unlist(lapply(flagstatRes["Supplementary", ], getVal)) -
+  unlist(lapply(flagstatRes["Duplicates", ], getVal))
 
-flagstatRes[nrow(flagstatRes)+1,] <- round(as.numeric(flagstatRes["Mapped", ]) / as.numeric(flagstatRes["nreads", ]) * 100, digits = 2)
-
-flagstatRes <- flagstatRes[c(6,1,2,3,4,7),]
-rownames(flagstatRes)[6] <- "%mapping"
+flagstatRes[nrow(flagstatRes)+1,] <- round(as.numeric(flagstatRes["Mapped", ]) / as.numeric(flagstatRes["total reads", ]) * 100, digits = 2)
+rownames(flagstatRes)[7] <- "%mapping"
 
 knitr::kable(flagstatRes, caption="Summary statistics from the minimap2 long read spliced mapping.", booktabs=TRUE, table.envir='table*', linesep="")  %>%
   kable_styling(latex_options=c("hold_position", font_size=11)) %>%

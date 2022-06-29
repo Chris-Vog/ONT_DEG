@@ -1,5 +1,4 @@
-# Configuration of the analysis----
-## Setting the working directory
+#Setting the working directory----
 ## Hier stellt ihr fest, in welchem Ordner ihr arbeitet
 ## Wenn nicht weiter spezifiziert, dann ist dies der Ausgangspunkt aller Dateipfade
 dir <- file.path(getwd())
@@ -35,6 +34,8 @@ suppressMessages(library(clusterProfiler))
 suppressMessages(library(tidyft))
 suppressMessages(library(AnnotationHub))
 suppressMessages(library(kableExtra))
+suppressMessages(library(EnhancedVolcano))
+suppressMessages(library(VennDiagram))
 
 #Loading custom functions and configurations
 ## Selbstgeschriebene FUnktionen k?nnen in einer Extra-Datei gespeichert werden
@@ -47,6 +48,7 @@ dir.create(resultDir, showWarnings = FALSE, recursive = TRUE) # Erstellung eines
 ## Laden der Konfiguration eurer Analyse, auf die im Laufe der Analyse zugegriffen wird
 config <- yaml::yaml.load_file("config.yaml")
 persistenceData <- file.path(resultDir, paste0(config$project, ".RData"))
+save.image(file = persistenceData)
 
 #Creating the study design from the config-file
 ## Das study design enth?lt die Informationen ?ber eure Proben
